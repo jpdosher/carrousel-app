@@ -80,10 +80,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         ariaLabelForSelectionColumn="Toggle selection"
         ariaLabelForSelectAllCheckbox="Toggle selection for all items"
         checkButtonAriaLabel="select row"
-        
-        // Set a fixed width or percentage width for the table
-        // For example, maxWidth: "800px" or width: "80%"
-        // Adjust this based on your layout and design preferences style={{ width: "100%" }}
       />
     </div>
   );
