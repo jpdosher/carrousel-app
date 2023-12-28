@@ -1,0 +1,29 @@
+
+h2{
+    line-height: 26px;
+    font-size: 16px;
+    text-align: left;
+    color: #333333;
+    font-weight:bold;
+}
+
+.BoxListaDetalhes {
+    width: 90%; 
+    margin: 0 auto;
+    padding-top: 50px;
+  }
+
+.BoxListaDetalhes__Cabecalho{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px;
+
+}
+
+.BoxListaDetalhes__Lista{
+    background-color: var(--cor-terciaria);
+    padding: 3% 3% 3% 3%;
+}
+
+  

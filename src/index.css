@@ -2,11 +2,11 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 26px;
 
-  background-color: #919191 ;
+  background-color: RGB(245,245,245);
   
   --cor-primaria: #FAB416;
   --cor-secundaria: #919191  ;
-  --cor-terciaria: #F5F5F5;
+  --cor-terciaria: RGB(255,255,255);
   --fonte-principal-style: 'bold';
   --fonte-terciaria: 'Segoe UI';
 }
@@ -15,26 +15,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-  color: brown;
+  /* font-family: Arial, sans-serif; */
 }
 
 
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+
+
