@@ -6,7 +6,7 @@
 .cabecalho {
   background-color: var(--cor-terciaria);
   
-  padding: 5px;
+  padding: 20px 20px 20px 20px;
   text-align: center;
   display: flex;
   justify-content: space-between;
@@ -24,7 +24,7 @@
 .cabecalho__logo {
   display: flex;
   flex: 0.1; 
-  max-height: 40px;
+  max-height: 30px;
 }
 
 nav {

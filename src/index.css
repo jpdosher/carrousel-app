@@ -9,6 +9,12 @@
   --cor-terciaria: RGB(255,255,255);
   --fonte-principal-style: 'bold';
   --fonte-terciaria: 'Segoe UI';
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 

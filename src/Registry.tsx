@@ -8,6 +8,8 @@ import {
   IDetailsRowStyles,
   IDetailsRowProps,
   IconButton,
+  DefaultButton,
+  Modal
 } from "@fluentui/react";
 import "./Registry.css";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
@@ -23,6 +25,7 @@ interface ItemCadastro {
   Imagem: string;
   Link: string;
   Ordem: number;
+  [key: string]: any;
 }
 
 interface CadastroProps {
@@ -37,6 +40,10 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const initialState: ItemCadastro[] = [];
   const [items, setItems] = useState<ItemCadastro[]>(initialState);
 
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteStatus, setDeleteStatus] = useState<"pending" | "success">("pending");
+  const [itemToDelete, setItemToDelete] = useState<ItemCadastro | null>(null);
+
   const [columns, setColumns] = useState<IColumn[]>([
     {
       key: "ID",
@@ -50,45 +57,34 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       name: "Título",
       fieldName: "Titulo",
       minWidth: 100,
-      maxWidth: 180,
+      maxWidth: 220,
     },
     {
       key: "Descricao",
       name: "Descrição",
       fieldName: "Descricao",
       minWidth: 150,
-      maxWidth: 180,
+      maxWidth: 220,
     },
     {
       key: "Imagem",
-      name: "Image",
+      name: "URL do Arquivo",
       fieldName: "Imagem",
       minWidth: 100,
       maxWidth: 200,
     },
     {
       key: "Link",
-      name: "Link",
+      name: "URL direcionamento",
       fieldName: "Link",
       minWidth: 150,
       maxWidth: 180,
     },
     {
-      key: "Ordem",
-      name: "Ordem",
-      fieldName: "Ordem",
-      minWidth: 50,
-      maxWidth: 60,
-      isSorted: sortedColumn === "Ordem",
-      isSortedDescending: isSortedDescending,
-      onColumnClick: (ev, column) => onColumnClick(ev, column),
-    },
-    {
       key: "delete",
-      name: "Delete",
-      fieldName: "delete",
-      minWidth: 30,
-      maxWidth: 50,
+      name: "",
+      minWidth: 40,
+      maxWidth: 40,
       onRender: (item) => (
         <IconButton
           iconProps={{ iconName: "Delete" }}
@@ -101,10 +97,9 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     },
     {
       key: "edit",
-      name: "Edit",
-      fieldName: "edit",
-      minWidth: 30,
-      maxWidth: 50,
+      name: "",
+      minWidth: 40,
+      maxWidth: 40,
       onRender: (item) => (
         <IconButton
           iconProps={{ iconName: "Edit" }}
@@ -121,53 +116,68 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     // Fetch data from the API
     fetch(API_URL)
       .then((response) => response.json())
-      .then((data) => {
+      .then((data: ItemCadastro[]) => {
         // Sort the data by the specified column
-        if (sortedColumn) {
-          const sortedData = [...data].sort((a, b) => {
-            const aValue = a[sortedColumn];
-            const bValue = b[sortedColumn];
+        const sortedData = data.slice().sort((a, b) => {
+          const aValue = a.Ordem.toString(); // Ensure the value is treated as a string
+          const bValue = b.Ordem.toString(); // Ensure the value is treated as a string
 
-            if (isSortedDescending) {
-              return bValue - aValue;
-            } else {
-              return aValue - bValue;
-            }
-          });
+          // Convert values to numbers for proper sorting
+          const aValueNumber = parseFloat(aValue);
+          const bValueNumber = parseFloat(bValue);
 
-          setItems(sortedData);
-        } else {
-          setItems(data);
-        }
+          return isSortedDescending ? bValueNumber - aValueNumber : aValueNumber - bValueNumber;
+        });
+
+        setItems(sortedData);
       });
-  }, [sortedColumn, isSortedDescending]);
+  }, [isSortedDescending]);
+  
+
 
   const handleEdit = (item: any) => {
     // Falta lógica
     console.log("Edit clicked for item:", item);
   };
 
-  const handleDelete = (item: any) => {
-    // Falta lógica
-    console.log("Delete clicked for item:", item);
+  const handleDelete = (item: ItemCadastro) => {
+    setItemToDelete(item);
+    setDeleteModalVisible(true);
   };
 
-  //sorting by "Ordem" column with a onClick
-  const onColumnClick = (
-    ev: React.MouseEvent<HTMLElement>,
-    column: IColumn
-  ): void => {
-    const { key, isSorted, isSortedDescending } = column;
+  const handleCancelDelete = () => {
+    setDeleteModalVisible(false);
+    setItemToDelete(null);
+    setDeleteStatus("pending");
+  };
 
-    if (isSorted) {
-      // Toggle sorting direction if the column is already sorted
-      setIsSortedDescending(!isSortedDescending);
-    } else {
-      // Set the column to be sorted and set the direction to ascending
-      setSortedColumn(key);
-      setIsSortedDescending(false);
+  const handleConfirmDelete = () => {
+    // Perform the DELETE request to mockAPI
+    if (itemToDelete) {
+      const itemId = itemToDelete.ID;
+      const deleteUrl = `${API_URL}/${itemId}`;
+
+      fetch(deleteUrl, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            // Remove the deleted item from the local state
+            const updatedItems = items.filter((item) => item.ID !== itemId);
+            setItems(updatedItems);
+            setDeleteStatus("success");
+          } else {
+            // Handle error if needed
+            console.error("Failed to delete item");
+          }
+        })
+        .catch((error) => {
+          // Handle error if needed
+          console.error("Error deleting item", error);
+        });
     }
   };
+
 
   return (
     <div className="BoxListaDetalhes">
@@ -199,6 +209,35 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           checkButtonAriaLabel="select row"
         />
       </div>
+{/* Delete Modal */}
+{isDeleteModalVisible && (
+        <Modal
+          isOpen={isDeleteModalVisible}
+          onDismiss={handleCancelDelete}
+          isBlocking={false}
+          containerClassName="customModal"
+        >
+          <div style={{ padding: 20, width: 400 }}>
+            <h2 style={{ fontSize: 18 }}>
+              {deleteStatus === "success" ? "Sucesso" : "Excluir Imagem?"}
+            </h2>
+            <p style={{ fontSize: 14 }}>
+              {deleteStatus === "success"
+                ? "Item excluído"
+                : "Esta ação não pode ser desfeita"}
+            </p>
+
+            {deleteStatus === "success" ? (
+              <PrimaryButton text="Fechar" onClick={handleCancelDelete} styles={{ root: { backgroundColor: "#FAB416",borderColor: "#FAB416",} }} />
+            ) : (
+              <div style={{ textAlign: "right" }}>
+                <DefaultButton text="Cancelar" onClick={handleCancelDelete} style={{ marginRight: 10 }} />
+                <PrimaryButton text="Excluir" onClick={handleConfirmDelete} styles={{ root: { backgroundColor: "#FAB416",borderColor: "#FAB416", } }} />
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
