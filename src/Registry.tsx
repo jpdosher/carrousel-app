@@ -44,6 +44,49 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [deleteStatus, setDeleteStatus] = useState<"pending" | "success">("pending");
   const [itemToDelete, setItemToDelete] = useState<ItemCadastro | null>(null);
 
+<<<<<<< Updated upstream
+=======
+  const [isEditPanelOpen, setEditPanelOpen] = useState(false);
+  const [editedItem, setEditedItem] = useState<ItemCadastro | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccessful, setSaveSuccessful] = useState(false);
+
+  const [editedTitulo, setEditedTitulo] = useState<string>(
+    editedItem?.Titulo || ""
+  );
+  const [editedDescricao, setEditedDescricao] = useState<string>(
+    editedItem?.Titulo || ""
+  );
+  const [editedImagem, setEditedImagem] = useState<string>(
+    editedItem?.Titulo || ""
+  );
+  const [editedLink, setEditedLink] = useState<string>(
+    editedItem?.Titulo || ""
+  );
+
+  // New state variables for field validation
+  const [tituloError, setTituloError] = useState<string | undefined>(undefined);
+  const [descricaoError, setDescricaoError] = useState<string | undefined>(
+    undefined
+  );
+  const [imagemError, setImagemError] = useState<string | undefined>(undefined);
+  const [linkError, setLinkError] = useState<string | undefined>(undefined);
+
+  const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+
+  useEffect(() => {
+    // Update the state when editedItem changes
+    if (editedItem) {
+      setEditedTitulo(editedItem.Titulo || "");
+      setEditedDescricao(editedItem.Descricao || "");
+      setEditedImagem(editedItem.Imagem || "");
+      setEditedLink(editedItem.Link || "");
+      // Set initial state for other fields as well
+    }
+  }, [editedItem]);
+
+  //colunas
+>>>>>>> Stashed changes
   const [columns, setColumns] = useState<IColumn[]>([
     {
       key: "ID",
@@ -135,10 +178,117 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   
 
 
+<<<<<<< Updated upstream
   const handleEdit = (item: any) => {
     // Falta lógica
     console.log("Edit clicked for item:", item);
+=======
+    // Validate Título
+    if (!editedTitulo) {
+      setTituloError("Título é obrigatório");
+      isValid = false;
+    } else {
+      setTituloError(undefined);
+    }
+
+    // Validate Descrição
+    if (!editedDescricao) {
+      setDescricaoError("Descrição é obrigatória");
+      isValid = false;
+    } else {
+      setDescricaoError(undefined);
+    }
+
+    // Validate URL do Arquivo
+    if (!editedImagem) {
+      setImagemError("URL do Arquivo é obrigatório");
+      isValid = false;
+    } else {
+      setImagemError(undefined);
+    }
+
+    // Validate URL direcionamento
+    if (!editedLink) {
+      setLinkError("URL direcionamento é obrigatório");
+      isValid = false;
+    } else {
+      setLinkError(undefined);
+    }
+
+    return isValid;
   };
+
+  const handleEdit = (item: ItemCadastro) => {
+    setEditedItem(item);
+    setEditPanelOpen(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditPanelOpen(false);
+    setEditedItem(null);
+    setIsSaving(false);
+  };
+
+  const handleSaveEdit = () => {
+    if (editedItem) {
+      // Validate mandatory fields
+      if (!validateForm()) {
+        return;
+      }
+
+      const updatedData = {
+        Titulo: editedTitulo,
+        Descricao: editedDescricao,
+        Imagem: editedImagem,
+        Link: editedLink,
+      };
+
+      const putUrl = `${API_URL}/${editedItem.ID}`;
+
+      setIsSaving(true);
+
+      fetch(putUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      })
+        .then((response) => {
+          if (response.ok) {
+            const updatedItems = items.map((item) =>
+              item.ID === editedItem.ID ? { ...item, ...updatedData } : item
+            );          
+
+            setEditPanelOpen(false);
+            // setSuccessModalVisible(true);
+            setEditedItem(null);
+            setItems(updatedItems);
+            
+
+          } else {
+            console.error("Failed to update item");
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating item", error);
+        })
+        .finally(() => {
+          setIsSaving(false);          
+
+        });
+    }
+
+    
+
+>>>>>>> Stashed changes
+  };
+
+
+
+  
+
+
 
   const handleDelete = (item: ItemCadastro) => {
     setItemToDelete(item);
@@ -238,6 +388,130 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           </div>
         </Modal>
       )}
+<<<<<<< Updated upstream
+=======
+
+      {/* Edit Side Panel */}
+
+      {isEditPanelOpen && editedItem && (
+        <Panel
+          isOpen={isEditPanelOpen}
+          onDismiss={handleCancelEdit}
+          headerText="Editar"
+          type={PanelType.medium}
+          isLightDismiss={true}
+          styles={{
+            main: { padding: "10px", paddingTop: "40px" },
+            headerText: { fontSize: "22px", lineHeight: "22px" },
+          }}
+        >
+          <form>
+            {/* Edit form fields with error messages */}
+            <TextField
+              label="Título"
+              value={editedTitulo}
+              required
+              disabled={false}
+              errorMessage={tituloError}
+              onChange={(event, newValue) => {
+                setEditedTitulo(newValue || "");
+                setTituloError(undefined); // Clear error on change
+              }}
+              styles={textFieldStyles}
+            />
+            <TextField
+              label="Descrição"
+              value={editedDescricao}
+              required
+              disabled={false}
+              errorMessage={descricaoError}
+              onChange={(event, newValue) => {
+                setEditedDescricao(newValue || "");
+                setDescricaoError(undefined);
+              }}
+              styles={textFieldStyles}
+            />
+            <TextField
+              label="URL do Arquivo"
+              value={editedImagem}
+              required
+              disabled={false}
+              errorMessage={imagemError}
+              onChange={(event, newValue) => {
+                setEditedImagem(newValue || "");
+                setImagemError(undefined);
+              }}
+              styles={textFieldStyles}
+            />
+            <TextField
+              label="URL direcionamento"
+              value={editedLink}
+              required
+              disabled={false}
+              errorMessage={linkError}
+              onChange={(event, newValue) => {
+                setEditedLink(newValue || "");
+                setLinkError(undefined);
+              }}
+              styles={textFieldStyles}
+            />
+          </form>
+          {/* Edit form buttons */}
+
+          <div
+            style={{
+              padding: "30px",
+              display: "flex",
+              justifyContent: "flex-start",
+              gap: "10px",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              margin: 0,
+            }}
+          >
+            <DefaultButton
+              text="Cancelar"
+              onClick={handleCancelEdit}
+              disabled={isSaving}
+            />
+            <PrimaryButton
+              text="Salvar alterações"
+              onClick={handleSaveEdit}
+              disabled={isSaving}
+              styles={{
+                root: { backgroundColor: "#FAB416", border: "0px" },
+              }}
+            />
+          </div>
+
+          {isSuccessModalVisible && (
+            <Modal
+              isOpen={isSuccessModalVisible}
+              onDismiss={() => setSuccessModalVisible(false)}
+              isBlocking={false}
+              containerClassName="customModal"
+            >
+              <div style={{ padding: 20, width: 400 }}>
+                <h2 style={{ fontSize: 18 }}>Sucesso</h2>
+                <p style={{ fontSize: 14 }}>Item editado com sucesso!</p>
+                <PrimaryButton
+                  text="Fechar"
+                  onClick={() => setSuccessModalVisible(false)}
+                  styles={{
+                    root: {
+                      backgroundColor: "#FAB416",
+                      borderColor: "#FAB416",
+                    },
+                  }}
+                />
+              </div>
+            </Modal>
+          )}
+        </Panel>
+      )}
+>>>>>>> Stashed changes
     </div>
   );
 };
