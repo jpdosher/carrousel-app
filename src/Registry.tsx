@@ -4,16 +4,17 @@ import {
   DetailsListLayoutMode,
   IColumn,
   SelectionMode,
-  DetailsRow,
-  IDetailsRowStyles,
-  IDetailsRowProps,
   IconButton,
+  PrimaryButton,
   DefaultButton,
-  Modal
+  Modal,
+  initializeIcons,
+  TextField,
+  PanelType,
 } from "@fluentui/react";
 import "./Registry.css";
-import { PrimaryButton } from "@fluentui/react/lib/Button";
-import { initializeIcons } from "@fluentui/react/lib/Icons";
+import { Panel } from "@fluentui/react/lib/Panel";
+
 initializeIcons();
 
 const API_URL = "https://658bd778859b3491d3f4e033.mockapi.io/api/v1/Cadastro";
@@ -33,24 +34,30 @@ interface CadastroProps {
 }
 
 const Cadastro: React.FC<CadastroProps> = (props) => {
+  // State for sorting
   const [sortedColumn, setSortedColumn] = useState<string | undefined>(
     undefined
   );
   const [isSortedDescending, setIsSortedDescending] = useState<boolean>(false);
+
+  // Initial state and state for items
   const initialState: ItemCadastro[] = [];
   const [items, setItems] = useState<ItemCadastro[]>(initialState);
 
+  // States related to delete modal
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [deleteStatus, setDeleteStatus] = useState<"pending" | "success">("pending");
+  const [deleteStatus, setDeleteStatus] = useState<"pending" | "success">(
+    "pending"
+  );
   const [itemToDelete, setItemToDelete] = useState<ItemCadastro | null>(null);
 
-<<<<<<< Updated upstream
-=======
+  // States related to edit panel
   const [isEditPanelOpen, setEditPanelOpen] = useState(false);
   const [editedItem, setEditedItem] = useState<ItemCadastro | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccessful, setSaveSuccessful] = useState(false);
 
+  // States for edited item properties
   const [editedTitulo, setEditedTitulo] = useState<string>(
     editedItem?.Titulo || ""
   );
@@ -72,21 +79,35 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [imagemError, setImagemError] = useState<string | undefined>(undefined);
   const [linkError, setLinkError] = useState<string | undefined>(undefined);
 
+  // State for success modal visibility
   const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
 
+  // State for new item
+  const [isNewItem, setIsNewItem] = useState(false);
+
+  // State for edited item's ordem
+  const [editedOrdem, setEditedOrdem] = useState<number>(0);
+
   useEffect(() => {
-    // Update the state when editedItem changes
     if (editedItem) {
       setEditedTitulo(editedItem.Titulo || "");
       setEditedDescricao(editedItem.Descricao || "");
       setEditedImagem(editedItem.Imagem || "");
       setEditedLink(editedItem.Link || "");
-      // Set initial state for other fields as well
+      setEditedOrdem(editedItem.Ordem || 0); // Make sure this is correct
+    } else {
+      // Reset fields for new item
+      setEditedTitulo("");
+      setEditedDescricao("");
+      setEditedImagem("");
+      setEditedLink("");
+      const highestOrdem = items.reduce((max, item) => Math.max(max, item.Ordem), 0);
+      setEditedOrdem(highestOrdem + 1);
     }
-  }, [editedItem]);
+  }, [editedItem, items]);
+  
 
   //colunas
->>>>>>> Stashed changes
   const [columns, setColumns] = useState<IColumn[]>([
     {
       key: "ID",
@@ -169,46 +190,45 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           const aValueNumber = parseFloat(aValue);
           const bValueNumber = parseFloat(bValue);
 
-          return isSortedDescending ? bValueNumber - aValueNumber : aValueNumber - bValueNumber;
+          return isSortedDescending
+            ? bValueNumber - aValueNumber
+            : aValueNumber - bValueNumber;
         });
 
         setItems(sortedData);
       });
   }, [isSortedDescending]);
-  
 
+  // Function to validate form fields
+  const validateForm = () => {
+    let isValid = true;
 
-<<<<<<< Updated upstream
-  const handleEdit = (item: any) => {
-    // Falta lógica
-    console.log("Edit clicked for item:", item);
-=======
-    // Validate Título
-    if (!editedTitulo) {
+    // Validation for Titulo
+    if (!editedTitulo.trim()) {
       setTituloError("Título é obrigatório");
       isValid = false;
     } else {
       setTituloError(undefined);
     }
 
-    // Validate Descrição
-    if (!editedDescricao) {
+    // Validation for Descricao
+    if (!editedDescricao.trim()) {
       setDescricaoError("Descrição é obrigatória");
       isValid = false;
     } else {
       setDescricaoError(undefined);
     }
 
-    // Validate URL do Arquivo
-    if (!editedImagem) {
+    // Validation for Imagem
+    if (!editedImagem.trim()) {
       setImagemError("URL do Arquivo é obrigatório");
       isValid = false;
     } else {
       setImagemError(undefined);
     }
 
-    // Validate URL direcionamento
-    if (!editedLink) {
+    // Validation for Link
+    if (!editedLink.trim()) {
       setLinkError("URL direcionamento é obrigatório");
       isValid = false;
     } else {
@@ -219,6 +239,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   };
 
   const handleEdit = (item: ItemCadastro) => {
+    setIsNewItem(false);
     setEditedItem(item);
     setEditPanelOpen(true);
   };
@@ -230,65 +251,94 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   };
 
   const handleSaveEdit = () => {
-    if (editedItem) {
-      // Validate mandatory fields
-      if (!validateForm()) {
-        return;
-      }
+    if (!validateForm()) {
+      return;
+    }
 
-      const updatedData = {
-        Titulo: editedTitulo,
-        Descricao: editedDescricao,
-        Imagem: editedImagem,
-        Link: editedLink,
-      };
+    setIsSaving(true); // Start saving process
 
-      const putUrl = `${API_URL}/${editedItem.ID}`;
+    const itemData = {
+      Titulo: editedTitulo,
+      Descricao: editedDescricao,
+      Imagem: editedImagem,
+      Link: editedLink,
+      Ordem: editedOrdem,
+    };
 
-      setIsSaving(true);
+    if (isNewItem) {
+      updateOrdemAfterAdd(editedOrdem); // Atualiza a ordem antes de adicionar o novo item
 
-      fetch(putUrl, {
-        method: "PUT",
+      // Handle creating a new item
+      fetch(API_URL, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedData),
+        body: JSON.stringify(itemData),
       })
-        .then((response) => {
-          if (response.ok) {
-            const updatedItems = items.map((item) =>
-              item.ID === editedItem.ID ? { ...item, ...updatedData } : item
-            );          
-
-            setEditPanelOpen(false);
-            // setSuccessModalVisible(true);
-            setEditedItem(null);
-            setItems(updatedItems);
-            
-
-          } else {
-            console.error("Failed to update item");
-          }
+        .then((response) => response.json())
+        .then((newItem) => {
+          // Add the new item to the list of items
+          setItems((prevItems) => [...prevItems, newItem]);
+          setEditPanelOpen(false);
+          setIsNewItem(false);
         })
+
         .catch((error) => {
-          console.error("Error updating item", error);
+          console.error("Error adding new item:", error);
         })
         .finally(() => {
-          setIsSaving(false);          
-
+          setIsSaving(false); // End saving process
         });
+    } else if (editedItem) {
+      if (editedItem) {
+        // Validate mandatory fields
+        if (!validateForm()) {
+          return;
+        }
+
+        const updatedData = {
+          Titulo: editedTitulo,
+          Descricao: editedDescricao,
+          Imagem: editedImagem,
+          Link: editedLink,
+          Ordem: editedOrdem,
+        };
+
+        const putUrl = `${API_URL}/${editedItem.ID}`;
+
+        setIsSaving(true);
+
+        fetch(putUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedData),
+        })
+          .then((response) => {
+            if (response.ok) {
+              const updatedItems = items.map((item) =>
+                item.ID === editedItem.ID ? { ...item, ...updatedData } : item
+              );
+
+              setEditPanelOpen(false);
+              // setSuccessModalVisible(true);
+              setEditedItem(null);
+              setItems(updatedItems);
+            } else {
+              console.error("Failed to update item");
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating item", error);
+          })
+          .finally(() => {
+            setIsSaving(false);
+          });
+      }
     }
-
-    
-
->>>>>>> Stashed changes
   };
-
-
-
-  
-
-
 
   const handleDelete = (item: ItemCadastro) => {
     setItemToDelete(item);
@@ -328,6 +378,71 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     }
   };
 
+  const handleAddNew = () => {
+    setIsNewItem(true);
+    setEditedItem(null);
+    setEditPanelOpen(true);
+    setEditedTitulo("");
+    setEditedDescricao("");
+    setEditedImagem("");
+    setEditedLink("");
+    setEditedOrdem(items.length + 1);
+    // Reset validation errors
+    setTituloError(undefined);
+    setDescricaoError(undefined);
+    setImagemError(undefined);
+    setLinkError(undefined);
+    // Find the highest 'Ordem' number
+    const highestOrdem = items.reduce(
+      (max, item) => Math.max(max, item.Ordem),
+      0
+    );
+    setEditedOrdem(highestOrdem + 1); // Set to highest 'Ordem' + 1
+  };
+
+  const updateOrdemAfterAdd = (newOrdem: number) => {
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.Ordem >= newOrdem ? { ...item, Ordem: item.Ordem + 1 } : item
+      )
+    );
+  };
+  
+  const updateOrdemAfterEdit = (oldOrdem: number, newOrdem: number) => {
+    setItems((prevItems) =>
+      prevItems.map((item) => {
+        if (oldOrdem < newOrdem) {
+          return item.Ordem > oldOrdem && item.Ordem <= newOrdem
+            ? { ...item, Ordem: item.Ordem - 1 }
+            : item;
+        } else {
+          return item.Ordem < oldOrdem && item.Ordem >= newOrdem
+            ? { ...item, Ordem: item.Ordem + 1 }
+            : item;
+        }
+      })
+    );
+  };
+  
+  const updateOrdemAfterDelete = (deletedOrdem: number) => {
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.Ordem > deletedOrdem ? { ...item, Ordem: item.Ordem - 1 } : item
+      )
+    );
+  };
+  
+  
+
+  const textFieldStyles = {
+    fieldGroup: {
+      fontSize: "30px",
+    },
+  };
+
+  /*
+  //****************   JSX  ******************************************************
+  */
 
   return (
     <div className="BoxListaDetalhes">
@@ -335,7 +450,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         <h2>Cadastro de imagens</h2>
         <PrimaryButton
           text="+ Nova Imagem"
-          onClick={() => console.log("Button clicked")}
+          onClick={handleAddNew}
           styles={{
             root: {
               backgroundColor: "#FAB416",
@@ -359,8 +474,8 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           checkButtonAriaLabel="select row"
         />
       </div>
-{/* Delete Modal */}
-{isDeleteModalVisible && (
+      {/* Delete Modal */}
+      {isDeleteModalVisible && (
         <Modal
           isOpen={isDeleteModalVisible}
           onDismiss={handleCancelDelete}
@@ -378,26 +493,43 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             </p>
 
             {deleteStatus === "success" ? (
-              <PrimaryButton text="Fechar" onClick={handleCancelDelete} styles={{ root: { backgroundColor: "#FAB416",borderColor: "#FAB416",} }} />
+              <PrimaryButton
+                text="Fechar"
+                onClick={handleCancelDelete}
+                styles={{
+                  root: { backgroundColor: "#FAB416", borderColor: "#FAB416" },
+                }}
+              />
             ) : (
               <div style={{ textAlign: "right" }}>
-                <DefaultButton text="Cancelar" onClick={handleCancelDelete} style={{ marginRight: 10 }} />
-                <PrimaryButton text="Excluir" onClick={handleConfirmDelete} styles={{ root: { backgroundColor: "#FAB416",borderColor: "#FAB416", } }} />
+                <DefaultButton
+                  text="Cancelar"
+                  onClick={handleCancelDelete}
+                  style={{ marginRight: 10 }}
+                />
+                <PrimaryButton
+                  text="Excluir"
+                  onClick={handleConfirmDelete}
+                  styles={{
+                    root: {
+                      backgroundColor: "#FAB416",
+                      borderColor: "#FAB416",
+                    },
+                  }}
+                />
               </div>
             )}
           </div>
         </Modal>
       )}
-<<<<<<< Updated upstream
-=======
 
       {/* Edit Side Panel */}
 
-      {isEditPanelOpen && editedItem && (
+      {isEditPanelOpen && (editedItem || isNewItem) && (
         <Panel
           isOpen={isEditPanelOpen}
           onDismiss={handleCancelEdit}
-          headerText="Editar"
+          headerText={isNewItem ? "Adicionar Nova Imagem" : "Editar Imagem"}
           type={PanelType.medium}
           isLightDismiss={true}
           styles={{
@@ -455,6 +587,22 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               }}
               styles={textFieldStyles}
             />
+            <TextField
+              label="Ordem"
+              type="number"
+              value={editedOrdem.toString()}
+              onChange={(event, newValue) => {
+                const newOrdem = newValue
+                  ? Math.min(
+                      Math.max(1, parseInt(newValue)),
+                      isNewItem ? items.length + 1 : items.length
+                    )
+                  : 0;
+                setEditedOrdem(newOrdem);
+              }}
+              min={1}
+              max={isNewItem ? items.length + 1 : items.length}
+            />
           </form>
           {/* Edit form buttons */}
 
@@ -477,7 +625,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               disabled={isSaving}
             />
             <PrimaryButton
-              text="Salvar alterações"
+              text={isNewItem ? "Cadastrar Imagem" : "Salvar alterações"}
               onClick={handleSaveEdit}
               disabled={isSaving}
               styles={{
@@ -511,7 +659,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           )}
         </Panel>
       )}
->>>>>>> Stashed changes
     </div>
   );
 };
