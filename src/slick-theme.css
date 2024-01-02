@@ -32,7 +32,6 @@
     padding: 0;
 
     cursor: pointer;
-
     color: transparent;
     border: none;
     outline: none;
@@ -184,7 +183,7 @@
     width: 20px;
     height: 20px;
 
-    content: '...';
+    content:normal;
     text-align: center;
 
     opacity: .25;

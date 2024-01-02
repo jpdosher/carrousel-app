@@ -30,34 +30,34 @@ interface ItemCadastro {
 }
 
 interface CadastroProps {
-  // Define your props here if needed
+ 
 }
 
 const Cadastro: React.FC<CadastroProps> = (props) => {
-  // State for sorting
+  // Estado para ordenação
   const [sortedColumn, setSortedColumn] = useState<string | undefined>(
     undefined
   );
   const [isSortedDescending, setIsSortedDescending] = useState<boolean>(false);
 
-  // Initial state and state for items
+  // Estado inicial itens
   const initialState: ItemCadastro[] = [];
   const [items, setItems] = useState<ItemCadastro[]>(initialState);
 
-  // States related to delete modal
+  // Estado para Modal delete
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState<"pending" | "success">(
     "pending"
   );
   const [itemToDelete, setItemToDelete] = useState<ItemCadastro | null>(null);
 
-  // States related to edit panel
+  // Estados para side panel
   const [isEditPanelOpen, setEditPanelOpen] = useState(false);
   const [editedItem, setEditedItem] = useState<ItemCadastro | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccessful, setSaveSuccessful] = useState(false);
 
-  // States for edited item properties
+  // Estados para propriedades de itens editados
   const [editedTitulo, setEditedTitulo] = useState<string>(
     editedItem?.Titulo || ""
   );
@@ -71,7 +71,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     editedItem?.Titulo || ""
   );
 
-  // New state variables for field validation
+  // Novas variáveis de estado para validação de campo
   const [tituloError, setTituloError] = useState<string | undefined>(undefined);
   const [descricaoError, setDescricaoError] = useState<string | undefined>(
     undefined
@@ -79,13 +79,13 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [imagemError, setImagemError] = useState<string | undefined>(undefined);
   const [linkError, setLinkError] = useState<string | undefined>(undefined);
 
-  // State for success modal visibility
+  // Estado para visibilidade modal de sucesso
   const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
 
-  // State for new item
+  // Estado para Novo Item
   const [isNewItem, setIsNewItem] = useState(false);
 
-  // State for edited item's ordem
+  // Estado para ordem do item editado
   const [editedOrdem, setEditedOrdem] = useState<number>(0);
   const [forceRerender, setForceRerender] = useState(0);
 
@@ -95,9 +95,9 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       setEditedDescricao(editedItem.Descricao || "");
       setEditedImagem(editedItem.Imagem || "");
       setEditedLink(editedItem.Link || "");
-      setEditedOrdem(editedItem.Ordem || 0); // Make sure this is correct
+      setEditedOrdem(editedItem.Ordem || 0); 
     } else {
-      // Reset fields for new item
+      // Reset campos para novo item
       setEditedTitulo("");
       setEditedDescricao("");
       setEditedImagem("");
@@ -114,18 +114,18 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [columns, setColumns] = useState<IColumn[]>([
     {
       key: "ID",
-      name: "ID", //nome coluna
-      fieldName: "ID", //Ref dados
+      name: "ID", //nome coluna da tabela
+      fieldName: "ID", //Ref dados na tabela
       minWidth: 20,
       maxWidth: 40,
     },
-    {
-      key: "Ordem",
-      name: "Ordem", //nome coluna
-      fieldName: "Ordem", //Ref dados
-      minWidth: 20,
-      maxWidth: 40,
-    },
+    // {
+    //   key: "Ordem",
+    //   name: "Ordem", //nome coluna
+    //   fieldName: "Ordem", //Ref dados
+    //   minWidth: 20,
+    //   maxWidth: 40,
+    // },
     {
       key: "Titulo",
       name: "Título",
@@ -191,12 +191,12 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     fetch(API_URL)
       .then((response) => response.json())
       .then((data: ItemCadastro[]) => {
-        // Sort the data by the specified column
+        // Ordenar dados
         const sortedData = data.slice().sort((a, b) => {
-          const aValue = a.Ordem.toString(); // Ensure the value is treated as a string
-          const bValue = b.Ordem.toString(); // Ensure the value is treated as a string
+          const aValue = a.Ordem.toString(); 
+          const bValue = b.Ordem.toString(); 
 
-          // Convert values to numbers for proper sorting
+          
           const aValueNumber = parseFloat(aValue);
           const bValueNumber = parseFloat(bValue);
 
@@ -209,7 +209,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       });
   }, [isSortedDescending]);
 
-  // Function to validate form fields
+  // Validacao campos
   const validateForm = () => {
     let isValid = true;
 
@@ -265,7 +265,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       return;
     }
 
-    setIsSaving(true); // Start saving process
+    setIsSaving(true); // Start saving process (para bloquear botoes)
 
     const itemData = {
       Titulo: editedTitulo,
@@ -303,22 +303,22 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     } else if (editedItem) {
       const oldOrdem = editedItem.Ordem;
 
-      // Ensure 'Ordem' is unique
+      // Garantir que 'Ordem' do item seja unica
       const isOrdemAlreadyUsed = items.some(
         (item) => item.Ordem === editedOrdem && item.ID !== editedItem.ID
       );
       if (isOrdemAlreadyUsed) {
-        // Handle error or provide user feedback
+        
         console.error("Error: Duplicate 'Ordem' value");
         // Find the existing item with the same order
         const existingItem = items.find(
           (item) => item.Ordem === editedOrdem && item.ID !== editedItem.ID
         );
 
-        if (existingItem) {
-          const newOrdem = oldOrdem; // Move the existing item up by one step
+        if (existingItem) { // tratar item duplicado
+          const newOrdem = oldOrdem; 
           updateOrdemAfterEdit(existingItem.Ordem, newOrdem);
-          setEditedOrdem(existingItem.Ordem); // Set the edited item's order to the existing item's order
+          setEditedOrdem(existingItem.Ordem); 
         } else {
           
           console.error("Error: Duplicate 'Ordem' value");
@@ -331,7 +331,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         updateOrdemAfterEdit(oldOrdem, editedOrdem);
       }
 
-      // Validate mandatory fields
+      // Validar campos
       if (!validateForm()) {
         return;
       }
@@ -362,7 +362,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             );
 
             setEditPanelOpen(false);
-            // setSuccessModalVisible(true);
+            // setSuccessModalVisible(true);  -> Mantido desligado devido a BUG
             setEditedItem(null);
             setItems(updatedItems);
           } else {
@@ -377,7 +377,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         });
     }
 
-    // Trigger rerender after changes
+    // Forçar renderizacao para garantir ordenacao
     setForceRerender((prev) => prev + 1);
   };
 
@@ -481,9 +481,9 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     },
   };
 
-  /*
+
   //****************   JSX  ******************************************************
-  */
+
 
   return (
     <div className="BoxListaDetalhes">
@@ -504,7 +504,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
 
       <div className="BoxListaDetalhes__Lista">
         <DetailsList
-          key={forceRerender} // Add key prop to trigger rerender
+          key={forceRerender}
           items={items}
           columns={columns}
           setKey="set"
@@ -566,7 +566,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       )}
 
       {/* Edit Side Panel */}
-
       {isEditPanelOpen && (editedItem || isNewItem) && (
         <Panel
           isOpen={isEditPanelOpen}
@@ -579,8 +578,8 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             headerText: { fontSize: "22px", lineHeight: "22px" },
           }}
         >
-          <form>
-            {/* Edit form fields with error messages */}
+          {/* Campos do form com msg de erro */}
+          <form>            
             <TextField
               label="Título"
               value={editedTitulo}
@@ -589,7 +588,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               errorMessage={tituloError}
               onChange={(event, newValue) => {
                 setEditedTitulo(newValue || "");
-                setTituloError(undefined); // Clear error on change
+                setTituloError(undefined); 
               }}
               styles={textFieldStyles}
             />
@@ -646,8 +645,8 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               max={isNewItem ? items.length + 1 : items.length}
             />
           </form>
-          {/* Edit form buttons */}
 
+          {/* Form buttons */}
           <div
             style={{
               padding: "30px",
