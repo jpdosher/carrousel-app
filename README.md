@@ -1,6 +1,6 @@
- **#  Aplicativo Carrossel **
+ # Aplicativo ˜Carrossel de Imagens˜
 
-Este aplicativo é uma implementação de um carrossel de imagens dinâmico alimentado por uma lista de cadastros de imagens✨
+> Este aplicativo é uma implementação de um carrossel de imagens dinâmico alimentado por uma lista de cadastros de imagens✨
 
 **Funcionalidades:**
 
@@ -90,6 +90,11 @@ Acompanhe o progresso e as próximas etapas:
 - ToolTips
 - Lista com scrooling (surface fixada)
 - https://codesandbox.io/ para demonstração do projeto
+
+
+<br>
+
+---
 
 ### Palavras-chave:
 
