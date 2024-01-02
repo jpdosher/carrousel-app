@@ -1,22 +1,22 @@
-# carrousel-app
- Image registry with Carousel Slider
-**# Aplicativo Carrossel**
+ **#  Aplicativo Carrossel **
 
-Este aplicativo é uma implementação de um carrossel de imagens, seguindo o protótipo navegável fornecido. O aplicativo é composto por duas páginas:
+Este aplicativo é uma implementação de um carrossel de imagens dinâmico alimentado por uma lista de cadastros de imagens✨
 
-* **Carrossel:** Exibe uma lista de imagens, ordenadas pelo campo `Ordem`.
-* **Cadastro:** Permite cadastrar, editar e excluir imagens.
+**Funcionalidades:**
 
-**Requisitos**
+* **Página Carrossel:** Exibe um carrossel de imagens, ordenadas de acordo com sua importância. 
+* **Página Cadastro:** Permite cadastrar, editar e excluir imagens, mantendo o carrossel sempre atualizado. ️
 
-* O aplicativo deve ser desenvolvido em TypeScript.
-* O aplicativo deve utilizar React Hooks.
-* O aplicativo deve utilizar Fluent UI para construir a página de administração.
-* O aplicativo deve utilizar Mock API para estrutura de rest api.
+**Tecnologias utilizadas:**
 
-**Estrutura de Dados**
+* **TypeScript:** Para um código mais organizado e com tipagem forte. 
+* **React Hooks:** Para um gerenciamento de estado e efeitos colaterais mais eficiente. ♻️
+* **Fluent UI:** Para uma interface de usuário moderna e responsiva, seguindo as diretrizes de design da Microsoft. 
+* **Mock API:** Para simular uma API de back-end, permitindo o desenvolvimento sem a necessidade de um servidor real. 
 
-O aplicativo utiliza a seguinte estrutura de dados para representar uma imagem:
+**Estrutura de Dados:**
+
+Cada imagem é representada por uma interface simples:
 
 ```typescript
 export interface Imagem {
@@ -28,66 +28,68 @@ export interface Imagem {
 }
 ```
 
-**Página Carrossel**
+**Seções principais:**
 
-A página Carrossel exibe uma lista de imagens, ordenadas pelo campo `Ordem`. A lista é controlada pelo componente `<Carousel>`, que fornece as seguintes funcionalidades:
+* **Página Carrossel:** 
+    * Navegação por "bullets" para acesso rápido a cada imagem. 
+    * Navegação por setas para uma experiência fluida. ⬅️➡️
+    * Abertura de imagens em nova aba para uma visualização mais detalhada. ️
 
-* Navegação por "bullet"
-* Navegação por setas
-* Abertura de imagens em nova aba
+* **Página Cadastro:** ️
+    * Listagem de todas as imagens cadastradas, ordenadas pela sua ordem.
+    * Cadastro de novas imagens, com campos obrigatórios para garantir a completude das informações.
+    * Edição de imagens existentes, permitindo atualizar seus dados.
+    * Exclusão de imagens, com um modal de confirmação para evitar remoções acidentais.
 
-**Página Cadastro**
+**Requisitos adicionais atendidos:**
 
-A página Cadastro permite cadastrar, editar e excluir imagens. A página é composta pelos seguintes componentes:
+* Uso de TypeScript para tipagem forte e melhor organização do código.  ✅
+* Emprego de React Hooks para um gerenciamento de estado mais eficiente. ✅
+* Construção da interface com Fluent UI, seguindo as diretrizes de design da Microsoft. ✅
+* Estrutura de REST API mockada com Mock API. ✅
 
-* **Listagem:** Exibe uma lista de imagens cadastradas.
-* **Cadastro de novo item:** Permite cadastrar uma nova imagem.
-* **Edição de item:** Permite editar uma imagem existente.
-* **Exclusão:** Permite excluir uma imagem.
+**Materiais auxiliares:**
 
-**Cadastro de novo item**
+* Fluent UI: [https://developer.microsoft.com/en-us/fluentui#/get-started](https://developer.microsoft.com/en-us/fluentui#/get-started)  
+* Mock API: [https://mockapi.io/](https://mockapi.io/)  
+* Pacote de ícones (a ser disponibilizado) ️
 
-O formulário de cadastro de novo item possui os seguintes campos:
+### Conclusão
 
-* Título
-* Descrição
-* Imagem
-* Link
+Este aplicativo atende aos requisitos especificados e fornece uma implementação funcional de um carrossel de imagens, pronto para ser utilizado e aprimorado!
 
-Todos os campos são obrigatórios. Ao clicar no botão "Salvar", as informações são enviadas para a API de back-end. Se o cadastro for bem-sucedido, uma mensagem de sucesso é exibida.
+# Anotações do Projeto
 
-**Edição de item**
+Acompanhe o progresso e as próximas etapas:
 
-O formulário de edição de item carrega os dados da imagem selecionada na listagem. Todos os campos são editáveis. Ao clicar no botão "Salvar alterações", as informações são enviadas para a API de back-end. Se a edição for bem-sucedida, uma mensagem de sucesso é exibida.
+* Página do Notion com anotações e diário de bordo: [https://jpdosher.notion.site/SharePrime-teste-Carrossel-86d26fa071914db795a51f44ad0de406?pvs=4](https://jpdosher.notion.site/SharePrime-teste-Carrossel-86d26fa071914db795a51f44ad0de406?pvs=4)  
 
-**Exclusão**
+**Tarefas em andamento:**
 
-Ao clicar no botão "Excluir" de uma imagem na listagem, um modal de confirmação é exibido. Ao confirmar a exclusão, a imagem é excluída da API de back-end e uma mensagem de confirmação é exibida.
+- [x] Pesquisa sobre Fluent UI  ✅
+- [ ] Verificar responsividade 
+- [ ] Compor ReadMe para o repositório 
+- [ ] Bolar testes [ver em Pesquisa](https://www.notion.so/Pesquisa-50f0f5b1897348408d4bf8d602a51161?pvs=21) 
 
-**API de back-end**
+## Bugs identificados:
 
-A API de back-end é responsável por armazenar e recuperar as informações das imagens. A API é mockada usando o Mock API: [https://mockapi.io/](https://mockapi.io/).
+* **Slider:**
+    - [ ] Arrows e Dots não estão aparecendo 
+    - [ ] Criar box para reduzir DIV 
+* **Cadastro:**
+    - [ ] Esclarecer sobre "URL direcionamento" 
+    - [ ] MODAL de confirmação de edição ⚠️
 
-**Requisitos adicionais**
+## Melhorias no projeto (sugestões)
 
-Os seguintes requisitos adicionais são atendidos pelo aplicativo:
+- Dark Theme
+- Workspaces no VS Code +
+- ToolTips
+- Lista com scrooling (surface fixada)
+- https://codesandbox.io/ para demonstração do projeto
 
-* O aplicativo é desenvolvido em TypeScript, com os objetos definidos com `type` ou interfaces.
-* O aplicativo utiliza React Hooks para gerenciar o estado e os efeitos colaterais.
-* O aplicativo utiliza Fluent UI para construir a página de administração.
-* O aplicativo utiliza Mock API para estrutura de rest api.
-* O aplicativo é entregue via repositório de GIT.
+### Palavras-chave:
 
-**Materiais auxiliares**
-
-Os seguintes materiais auxiliares foram fornecidos para a implementação do aplicativo:
-
-* **Protótipo navegável:** fornece o layout e a funcionalidade do aplicativo.
-* **Paleta de cores e fontes:** define as cores e as fontes utilizadas no aplicativo.
-* **Fluent UI:** conjunto de componentes de UI para React.
-* **Mock API:** serviço para criar APIs mockadas.
-* **Pacote de ícones:** pacote de ícones para utilização no aplicativo.
-
-**Conclusão**
-
-Este aplicativo atende aos requisitos especificados e fornece uma implementação funcional de um carrossel de imagens.
+#REACT
+#FLUENT UI
+#TYPESCRIPT
