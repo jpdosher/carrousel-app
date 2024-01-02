@@ -52,17 +52,20 @@ export interface Imagem {
 
 * Fluent UI: [https://developer.microsoft.com/en-us/fluentui#/get-started](https://developer.microsoft.com/en-us/fluentui#/get-started)  
 * Mock API: [https://mockapi.io/](https://mockapi.io/)  
-* Pacote de ícones (a ser disponibilizado) ️
+
 
 ### Conclusão
 
-Este aplicativo atende aos requisitos especificados e fornece uma implementação funcional de um carrossel de imagens, pronto para ser utilizado e aprimorado!
+> Este aplicativo atende aos requisitos especificados e fornece uma implementação funcional de um carrossel de imagens, pronto para ser utilizado e aprimorado!
+
+<br>
+<br>
 
 # Anotações do Projeto
 
 Acompanhe o progresso e as próximas etapas:
 
-* Página do Notion com anotações e diário de bordo: [https://jpdosher.notion.site/SharePrime-teste-Carrossel-86d26fa071914db795a51f44ad0de406?pvs=4](https://jpdosher.notion.site/SharePrime-teste-Carrossel-86d26fa071914db795a51f44ad0de406?pvs=4)  
+* [Página do Notion com anotações e diário de bordo](https://jpdosher.notion.site/SharePrime-teste-Carrossel-86d26fa071914db795a51f44ad0de406?pvs=4)  
 
 **Tarefas em andamento:**
 
