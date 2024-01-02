@@ -87,6 +87,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
 
   // State for edited item's ordem
   const [editedOrdem, setEditedOrdem] = useState<number>(0);
+  const [forceRerender, setForceRerender] = useState(0);
 
   useEffect(() => {
     if (editedItem) {
@@ -101,11 +102,13 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       setEditedDescricao("");
       setEditedImagem("");
       setEditedLink("");
-      const highestOrdem = items.reduce((max, item) => Math.max(max, item.Ordem), 0);
+      const highestOrdem = items.reduce(
+        (max, item) => Math.max(max, item.Ordem),
+        0
+      );
       setEditedOrdem(highestOrdem + 1);
     }
   }, [editedItem, items]);
-  
 
   //colunas
   const [columns, setColumns] = useState<IColumn[]>([
@@ -113,6 +116,13 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       key: "ID",
       name: "ID", //nome coluna
       fieldName: "ID", //Ref dados
+      minWidth: 20,
+      maxWidth: 40,
+    },
+    {
+      key: "Ordem",
+      name: "Ordem", //nome coluna
+      fieldName: "Ordem", //Ref dados
       minWidth: 20,
       maxWidth: 40,
     },
@@ -177,7 +187,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   ]);
 
   useEffect(() => {
-    // Fetch data from the API
+    // Fetch data from the API (update)
     fetch(API_URL)
       .then((response) => response.json())
       .then((data: ItemCadastro[]) => {
@@ -291,53 +301,84 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           setIsSaving(false); // End saving process
         });
     } else if (editedItem) {
-      if (editedItem) {
-        // Validate mandatory fields
-        if (!validateForm()) {
+      const oldOrdem = editedItem.Ordem;
+
+      // Ensure 'Ordem' is unique
+      const isOrdemAlreadyUsed = items.some(
+        (item) => item.Ordem === editedOrdem && item.ID !== editedItem.ID
+      );
+      if (isOrdemAlreadyUsed) {
+        // Handle error or provide user feedback
+        console.error("Error: Duplicate 'Ordem' value");
+        // Find the existing item with the same order
+        const existingItem = items.find(
+          (item) => item.Ordem === editedOrdem && item.ID !== editedItem.ID
+        );
+
+        if (existingItem) {
+          const newOrdem = oldOrdem; // Move the existing item up by one step
+          updateOrdemAfterEdit(existingItem.Ordem, newOrdem);
+          setEditedOrdem(existingItem.Ordem); // Set the edited item's order to the existing item's order
+        } else {
+          
+          console.error("Error: Duplicate 'Ordem' value");
           return;
         }
-
-        const updatedData = {
-          Titulo: editedTitulo,
-          Descricao: editedDescricao,
-          Imagem: editedImagem,
-          Link: editedLink,
-          Ordem: editedOrdem,
-        };
-
-        const putUrl = `${API_URL}/${editedItem.ID}`;
-
-        setIsSaving(true);
-
-        fetch(putUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedData),
-        })
-          .then((response) => {
-            if (response.ok) {
-              const updatedItems = items.map((item) =>
-                item.ID === editedItem.ID ? { ...item, ...updatedData } : item
-              );
-
-              setEditPanelOpen(false);
-              // setSuccessModalVisible(true);
-              setEditedItem(null);
-              setItems(updatedItems);
-            } else {
-              console.error("Failed to update item");
-            }
-          })
-          .catch((error) => {
-            console.error("Error updating item", error);
-          })
-          .finally(() => {
-            setIsSaving(false);
-          });
       }
+        
+
+      if (oldOrdem !== editedOrdem) {
+        updateOrdemAfterEdit(oldOrdem, editedOrdem);
+      }
+
+      // Validate mandatory fields
+      if (!validateForm()) {
+        return;
+      }
+
+      const updatedData = {
+        Titulo: editedTitulo,
+        Descricao: editedDescricao,
+        Imagem: editedImagem,
+        Link: editedLink,
+        Ordem: editedOrdem,
+      };
+
+      const putUrl = `${API_URL}/${editedItem.ID}`;
+
+      setIsSaving(true);
+
+      fetch(putUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      })
+        .then((response) => {
+          if (response.ok) {
+            const updatedItems = items.map((item) =>
+              item.ID === editedItem.ID ? { ...item, ...updatedData } : item
+            );
+
+            setEditPanelOpen(false);
+            // setSuccessModalVisible(true);
+            setEditedItem(null);
+            setItems(updatedItems);
+          } else {
+            console.error("Failed to update item");
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating item", error);
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     }
+
+    // Trigger rerender after changes
+    setForceRerender((prev) => prev + 1);
   };
 
   const handleDelete = (item: ItemCadastro) => {
@@ -354,6 +395,8 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const handleConfirmDelete = () => {
     // Perform the DELETE request to mockAPI
     if (itemToDelete) {
+      updateOrdemAfterDelete(itemToDelete.Ordem); // Atualiza a ordem antes de excluir o item
+
       const itemId = itemToDelete.ID;
       const deleteUrl = `${API_URL}/${itemId}`;
 
@@ -407,7 +450,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       )
     );
   };
-  
+
   const updateOrdemAfterEdit = (oldOrdem: number, newOrdem: number) => {
     setItems((prevItems) =>
       prevItems.map((item) => {
@@ -423,7 +466,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       })
     );
   };
-  
+
   const updateOrdemAfterDelete = (deletedOrdem: number) => {
     setItems((prevItems) =>
       prevItems.map((item) =>
@@ -431,8 +474,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       )
     );
   };
-  
-  
 
   const textFieldStyles = {
     fieldGroup: {
@@ -463,6 +504,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
 
       <div className="BoxListaDetalhes__Lista">
         <DetailsList
+          key={forceRerender} // Add key prop to trigger rerender
           items={items}
           columns={columns}
           setKey="set"

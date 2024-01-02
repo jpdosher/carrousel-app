@@ -1,9 +1,9 @@
+// App.tsx
+
 import React from "react";
-import ReactDOM from "react-dom";
-import * as ReactRouterDom from "react-router-dom";
-import { BrowserRouter, Routes, Route, Link, NavLink, Navigate } from "react-router-dom";
-import Slider from "./Slider.tsx";
-import Cadastro from "./Registry.tsx";
+import { BrowserRouter, Routes, Route, NavLink, Navigate } from "react-router-dom";
+import SliderPage from "./Slider";
+import Cadastro from "./Registry";
 import "./App.css";
 
 const App: React.FC = () => {
@@ -28,16 +28,14 @@ const App: React.FC = () => {
           </NavLink>
         </nav>
 
-        <div>
-
-        </div>
+        <div></div>
       </header>
 
       <main>
         <Routes>
-          <Route path="/" element={<Navigate to="/slider" replace />} /> 
+          <Route path="/" element={<Navigate to="/slider" replace />} />
           <Route path="/registry" element={<Cadastro />} />
-          <Route path="/slider" element={<Slider />} index /> 
+          <Route path="/slider" element={<SliderPage />} />
         </Routes>
       </main>
     </BrowserRouter>
