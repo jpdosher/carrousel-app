@@ -51,7 +51,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [editedItem, setEditedItem] = useState<ItemCadastro | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-<<<<<<< Updated upstream
   const [editedTitulo, setEditedTitulo] = useState<string>(
     editedItem?.Titulo || ""
   );
@@ -64,13 +63,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [editedLink, setEditedLink] = useState<string>(
     editedItem?.Titulo || ""
   );
-=======
-  // Estados para propriedades de itens editados
-  const [editedTitulo, setEditedTitulo] = useState<string>(editedItem?.Titulo || "");
-  const [editedDescricao, setEditedDescricao] = useState<string>(editedItem?.Titulo || "");
-  const [editedImagem, setEditedImagem] = useState<string>(editedItem?.Titulo || "");
-  const [editedLink, setEditedLink] = useState<string>(editedItem?.Titulo || "");
->>>>>>> Stashed changes
 
   // New state variables for field validation
   const [tituloError, setTituloError] = useState<string | undefined>(undefined);
