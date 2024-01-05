@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./Slider.css"; // Add your custom styles for the slider
+import "./Slider.css";
 
 const API_URL = "https://658bd778859b3491d3f4e033.mockapi.io/api/v1/Cadastro";
 
-// Interface to define the structure of carousel items
 interface CarouselItem {
   ID: number;
   Titulo: string;
@@ -35,17 +34,15 @@ const Slider: React.FC = () => {
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % carouselData.length);
-};
+  };
 
-const prevSlide = () => {
+  const prevSlide = () => {
     setCurrentIndex(
-        (prevIndex) => (prevIndex - 1 + carouselData.length) % carouselData.length
+      (prevIndex) => (prevIndex - 1 + carouselData.length) % carouselData.length
     );
-};
-
+  };
 
   if (carouselData.length === 0) {
-    // Render loading or empty state while data is being fetched
     return <div>Carregando...</div>;
   }
 
@@ -74,6 +71,15 @@ const prevSlide = () => {
             </div>
           ))}
         </div>
+      </div>
+      <div className="dots-container">
+        {carouselData.map((_, index) => (
+          <span
+            key={index}
+            className={`dot ${index === currentIndex ? "active" : ""}`}
+            onClick={() => setCurrentIndex(index)}
+          ></span>
+        ))}
       </div>
       <div className="external-buttons-container">
         <img
