@@ -36,12 +36,20 @@
     left: 0; 
 }
 
-
 .text-container {
     flex: 1;
     text-align: left;
-    margin: 2% 2% 2% 2%;
-    width: 33.33%; /* Um terço do contêiner */
+    margin: 4% 4% 4% 4%;
+    width: 33.33%; /* One-third of the container */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--cor-secundaria);
+  }
+  
+.text-container h3 {
+    color: #333333;
+    margin: 0;
 }
 
 
@@ -103,7 +111,7 @@
 .dots-container {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: 40px;
   }
   
   .dot {
@@ -116,6 +124,6 @@
   }
   
   .dot.active {
-    background-color: darkgray;
+    background-color: var(--cor-primaria);
   }
   

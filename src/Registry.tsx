@@ -29,9 +29,7 @@ interface ItemCadastro {
   [key: string]: any;
 }
 
-interface CadastroProps {
- 
-}
+interface CadastroProps {}
 
 const Cadastro: React.FC<CadastroProps> = (props) => {
   // Estado para ordenação
@@ -71,7 +69,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     editedItem?.Titulo || ""
   );
 
-  // Novas variáveis de estado para validação de campo
+  // Estado para validação de campo
   const [tituloError, setTituloError] = useState<string | undefined>(undefined);
   const [descricaoError, setDescricaoError] = useState<string | undefined>(
     undefined
@@ -79,8 +77,13 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [imagemError, setImagemError] = useState<string | undefined>(undefined);
   const [linkError, setLinkError] = useState<string | undefined>(undefined);
 
-  // Estado para visibilidade modal de sucesso
-  const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+  // Estado para visibilidade modal de sucesso ao salvar novo item
+  const [isNewItemSuccessModalVisible, setIsNewItemSuccessModalVisible] =
+    useState(false);
+
+  // Estado para visibilidade modal de sucesso ao editar item
+  const [isEditItemSuccessModalVisible, setIsEditItemSuccessModalVisible] =
+    useState(false);
 
   // Estado para Novo Item
   const [isNewItem, setIsNewItem] = useState(false);
@@ -95,7 +98,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       setEditedDescricao(editedItem.Descricao || "");
       setEditedImagem(editedItem.Imagem || "");
       setEditedLink(editedItem.Link || "");
-      setEditedOrdem(editedItem.Ordem || 0); 
+      setEditedOrdem(editedItem.Ordem || 0);
     } else {
       // Reset campos para novo item
       setEditedTitulo("");
@@ -119,6 +122,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       minWidth: 20,
       maxWidth: 40,
     },
+    // uncomment para debugar
     // {
     //   key: "Ordem",
     //   name: "Ordem", //nome coluna
@@ -193,10 +197,9 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       .then((data: ItemCadastro[]) => {
         // Ordenar dados
         const sortedData = data.slice().sort((a, b) => {
-          const aValue = a.Ordem.toString(); 
-          const bValue = b.Ordem.toString(); 
+          const aValue = a.Ordem.toString();
+          const bValue = b.Ordem.toString();
 
-          
           const aValueNumber = parseFloat(aValue);
           const bValueNumber = parseFloat(bValue);
 
@@ -288,19 +291,19 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       })
         .then((response) => response.json())
         .then((newItem) => {
-          // Add the new item to the list of items
           setItems((prevItems) => [...prevItems, newItem]);
-          setEditPanelOpen(false);
-          setIsNewItem(false);
+          setIsNewItemSuccessModalVisible(true); // Show success modal for new item
         })
 
         .catch((error) => {
           console.error("Error adding new item:", error);
         })
         .finally(() => {
-          setIsSaving(false); // End saving process
+          setIsSaving(false);
+          setEditPanelOpen(false);
         });
     } else if (editedItem) {
+      //para item editado
       const oldOrdem = editedItem.Ordem;
 
       // Garantir que 'Ordem' do item seja unica
@@ -308,24 +311,22 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         (item) => item.Ordem === editedOrdem && item.ID !== editedItem.ID
       );
       if (isOrdemAlreadyUsed) {
-        
-        console.error("Error: Duplicate 'Ordem' value");
-        // Find the existing item with the same order
+        console.error("Erro: itens com ordem duplicada");
+        // Identificar itens na mesma ordem
         const existingItem = items.find(
           (item) => item.Ordem === editedOrdem && item.ID !== editedItem.ID
         );
 
-        if (existingItem) { // tratar item duplicado
-          const newOrdem = oldOrdem; 
+        if (existingItem) {
+          // tratar item duplicado
+          const newOrdem = oldOrdem;
           updateOrdemAfterEdit(existingItem.Ordem, newOrdem);
-          setEditedOrdem(existingItem.Ordem); 
+          setEditedOrdem(existingItem.Ordem);
         } else {
-          
           console.error("Error: Duplicate 'Ordem' value");
           return;
         }
       }
-        
 
       if (oldOrdem !== editedOrdem) {
         updateOrdemAfterEdit(oldOrdem, editedOrdem);
@@ -346,8 +347,9 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
 
       const putUrl = `${API_URL}/${editedItem.ID}`;
 
-      setIsSaving(true);
+      setIsSaving(true); //para bloquear botoes
 
+      // Atualizando o item no mockAPI
       fetch(putUrl, {
         method: "PUT",
         headers: {
@@ -360,11 +362,9 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             const updatedItems = items.map((item) =>
               item.ID === editedItem.ID ? { ...item, ...updatedData } : item
             );
-
-            setEditPanelOpen(false);
-            // setSuccessModalVisible(true);  -> Mantido desligado devido a BUG
             setEditedItem(null);
             setItems(updatedItems);
+            setIsEditItemSuccessModalVisible(true); // Show success modal for editing item
           } else {
             console.error("Failed to update item");
           }
@@ -374,6 +374,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         })
         .finally(() => {
           setIsSaving(false);
+          setEditPanelOpen(false);
         });
     }
 
@@ -410,12 +411,10 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             setItems(updatedItems);
             setDeleteStatus("success");
           } else {
-            // Handle error if needed
             console.error("Failed to delete item");
           }
         })
         .catch((error) => {
-          // Handle error if needed
           console.error("Error deleting item", error);
         });
     }
@@ -475,15 +474,31 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     );
   };
 
+  useEffect(() => {
+    if (isNewItemSuccessModalVisible) {
+      // Display the modal for new item success
+
+      setIsNewItemSuccessModalVisible(true);
+    }
+  }, [isNewItemSuccessModalVisible]);
+
+  useEffect(() => {
+    if (isEditItemSuccessModalVisible) {
+      // Display the modal for editing item success
+
+      setIsEditItemSuccessModalVisible(true);
+    }
+  }, [isEditItemSuccessModalVisible]);
+
+  
+
   const textFieldStyles = {
     fieldGroup: {
       fontSize: "30px",
     },
   };
 
-
   //****************   JSX  ******************************************************
-
 
   return (
     <div className="BoxListaDetalhes">
@@ -579,7 +594,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           }}
         >
           {/* Campos do form com msg de erro */}
-          <form>            
+          <form>
             <TextField
               label="Título"
               value={editedTitulo}
@@ -588,7 +603,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               errorMessage={tituloError}
               onChange={(event, newValue) => {
                 setEditedTitulo(newValue || "");
-                setTituloError(undefined); 
+                setTituloError(undefined);
               }}
               styles={textFieldStyles}
             />
@@ -675,19 +690,23 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             />
           </div>
 
-          {isSuccessModalVisible && (
+        </Panel>
+      )}
+
+          {/* Success Modal for New Item */}
+          {isNewItemSuccessModalVisible && (
             <Modal
-              isOpen={isSuccessModalVisible}
-              onDismiss={() => setSuccessModalVisible(false)}
+              isOpen={true} // Set to false, as it will be triggered by useEffect
+              onDismiss={() => setIsNewItemSuccessModalVisible(false)}
               isBlocking={false}
               containerClassName="customModal"
             >
               <div style={{ padding: 20, width: 400 }}>
-                <h2 style={{ fontSize: 18 }}>Sucesso</h2>
-                <p style={{ fontSize: 14 }}>Item editado com sucesso!</p>
+                <h2 style={{ fontSize: 18 }}>Sucesso!</h2>
+                <p style={{ fontSize: 14 }}>Item criado com sucesso!</p>
                 <PrimaryButton
                   text="Fechar"
-                  onClick={() => setSuccessModalVisible(false)}
+                  onClick={() => setIsNewItemSuccessModalVisible(false)}
                   styles={{
                     root: {
                       backgroundColor: "#FAB416",
@@ -698,8 +717,31 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               </div>
             </Modal>
           )}
-        </Panel>
-      )}
+
+          {/* Success Modal for Editing Item */}
+          {isEditItemSuccessModalVisible && (
+            <Modal
+              isOpen={true}
+              onDismiss={() => setIsEditItemSuccessModalVisible(false)}
+              isBlocking={false}
+              containerClassName="customModal"
+            >
+              <div style={{ padding: 20, width: 400 }}>
+                <h2 style={{ fontSize: 18 }}>Sucesso</h2>
+                <p style={{ fontSize: 14 }}>Item editado com sucesso!</p>
+                <PrimaryButton
+                  text="Fechar"
+                  onClick={() => setIsEditItemSuccessModalVisible(false)}
+                  styles={{
+                    root: {
+                      backgroundColor: "#FAB416",
+                      borderColor: "#FAB416",
+                    },
+                  }}
+                />
+              </div>
+            </Modal>
+          )}
     </div>
   );
 };

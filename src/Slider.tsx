@@ -42,10 +42,6 @@ const Slider: React.FC = () => {
     );
   };
 
-  if (carouselData.length === 0) {
-    return <div>Carregando...</div>;
-  }
-
   return (
     <div className="slider-outer-container">
       <div className="slider-container">
