@@ -31,6 +31,7 @@ interface ItemCadastro {
 
 interface CadastroProps {}
 
+//ANCHOR declaracao de States 
 const Cadastro: React.FC<CadastroProps> = (props) => {
   // Estado para ordenação
   const [sortedColumn, setSortedColumn] = useState<string | undefined>(
@@ -92,6 +93,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [editedOrdem, setEditedOrdem] = useState<number>(0);
   const [forceRerender, setForceRerender] = useState(0);
 
+  // ANCHOR useEffect para atualizar dados do componente
   useEffect(() => {
     if (editedItem) {
       setEditedTitulo(editedItem.Titulo || "");
@@ -109,11 +111,11 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         (max, item) => Math.max(max, item.Ordem),
         0
       );
-      setEditedOrdem(highestOrdem + 1);
+      setEditedOrdem(highestOrdem + 1); //FIXME - Ordem update
     }
   }, [editedItem, items]);
 
-  //colunas
+  //ANCHOR colunas para List
   const [columns, setColumns] = useState<IColumn[]>([
     {
       key: "ID",
@@ -123,13 +125,13 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       maxWidth: 40,
     },
     // uncomment para debugar
-    // {
-    //   key: "Ordem",
-    //   name: "Ordem", //nome coluna
-    //   fieldName: "Ordem", //Ref dados
-    //   minWidth: 20,
-    //   maxWidth: 40,
-    // },
+    {
+      key: "Ordem",
+      name: "Ordem", //nome coluna
+      fieldName: "Ordem", //Ref dados
+      minWidth: 20,
+      maxWidth: 40,
+    },
     {
       key: "Titulo",
       name: "Título",
@@ -189,7 +191,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       ),
     },
   ]);
-
+// ANCHOR useEffect para atualizar dados do componente
   useEffect(() => {
     // Fetch data from the API (update)
     fetch(API_URL)
@@ -268,7 +270,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       return;
     }
 
-    setIsSaving(true); // Start saving process (para bloquear botoes)
+    setIsSaving(true); // para bloquear botoes
 
     const itemData = {
       Titulo: editedTitulo,
@@ -279,7 +281,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     };
 
     if (isNewItem) {
-      updateOrdemAfterAdd(editedOrdem); // Atualiza a ordem antes de adicionar o novo item
 
       // Handle creating a new item
       fetch(API_URL, {
@@ -291,6 +292,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
       })
         .then((response) => response.json())
         .then((newItem) => {
+          updateOrdemAfterAdd(editedOrdem); //FIXME NOVO ITEM:Atualiza a ordem antes de adicionar o novo item
           setItems((prevItems) => [...prevItems, newItem]);
           setIsNewItemSuccessModalVisible(true); // Show success modal for new item
         })
@@ -304,7 +306,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         });
     } else if (editedItem) {
       //para item editado
-      const oldOrdem = editedItem.Ordem;
+      const oldOrdem = editedItem.Ordem; //FIXME - EDIT:  Antes de atualizar a ordem, verificar se a ordem ja esta sendo utilizada
 
       // Garantir que 'Ordem' do item seja unica
       const isOrdemAlreadyUsed = items.some(
@@ -322,6 +324,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           const newOrdem = oldOrdem;
           updateOrdemAfterEdit(existingItem.Ordem, newOrdem);
           setEditedOrdem(existingItem.Ordem);
+          
         } else {
           console.error("Error: Duplicate 'Ordem' value");
           return;
@@ -396,7 +399,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const handleConfirmDelete = () => {
     // Perform the DELETE request to mockAPI
     if (itemToDelete) {
-      updateOrdemAfterDelete(itemToDelete.Ordem); // Atualiza a ordem antes de excluir o item
 
       const itemId = itemToDelete.ID;
       const deleteUrl = `${API_URL}/${itemId}`;
@@ -410,6 +412,8 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             const updatedItems = items.filter((item) => item.ID !== itemId);
             setItems(updatedItems);
             setDeleteStatus("success");
+            updateOrdemAfterDelete(itemToDelete.Ordem); // Atualiza a ordem antes de excluir o item
+
           } else {
             console.error("Failed to delete item");
           }
@@ -474,18 +478,15 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     );
   };
 
+  //ANCHOR - Hooks para modal de sucesso
   useEffect(() => {
     if (isNewItemSuccessModalVisible) {
-      // Display the modal for new item success
-
       setIsNewItemSuccessModalVisible(true);
     }
   }, [isNewItemSuccessModalVisible]);
 
   useEffect(() => {
-    if (isEditItemSuccessModalVisible) {
-      // Display the modal for editing item success
-
+    if (isEditItemSuccessModalVisible) {      
       setIsEditItemSuccessModalVisible(true);
     }
   }, [isEditItemSuccessModalVisible]);
@@ -498,9 +499,10 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
     },
   };
 
-  //****************   JSX  ******************************************************
+  // ANCHOR **********   JSX  ***********
 
   return (
+    //ANCHOR - DetailsList
     <div className="BoxListaDetalhes">
       <div className="BoxListaDetalhes__Cabecalho">
         <h2>Cadastro de imagens</h2>
@@ -516,7 +518,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           }}
         />
       </div>
-
+      
       <div className="BoxListaDetalhes__Lista">
         <DetailsList
           key={forceRerender}
@@ -531,7 +533,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
           checkButtonAriaLabel="select row"
         />
       </div>
-      {/* Delete Modal */}
+      {/* ANCHOR Delete Modal */}
       {isDeleteModalVisible && (
         <Modal
           isOpen={isDeleteModalVisible}
@@ -580,7 +582,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         </Modal>
       )}
 
-      {/* Edit Side Panel */}
+      {/* ANCHOR Edit Side Panel */}
       {isEditPanelOpen && (editedItem || isNewItem) && (
         <Panel
           isOpen={isEditPanelOpen}
@@ -593,7 +595,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             headerText: { fontSize: "22px", lineHeight: "22px" },
           }}
         >
-          {/* Campos do form com msg de erro */}
+          {/* ANCHOR Campos do form com msg de erro */}
           <form>
             <TextField
               label="Título"
@@ -661,7 +663,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             />
           </form>
 
-          {/* Form buttons */}
+          {/* ANCHOR Form buttons */}
           <div
             style={{
               padding: "30px",
@@ -693,7 +695,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         </Panel>
       )}
 
-          {/* Success Modal for New Item */}
+          {/* ANCHOR Success Modal for New Item */}
           {isNewItemSuccessModalVisible && (
             <Modal
               isOpen={true} // Set to false, as it will be triggered by useEffect
@@ -718,7 +720,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             </Modal>
           )}
 
-          {/* Success Modal for Editing Item */}
+          {/* ANCHOR Success Modal for Editing Item */}
           {isEditItemSuccessModalVisible && (
             <Modal
               isOpen={true}
