@@ -32,11 +32,8 @@ interface ItemCadastro {
 interface CadastroProps {}
 
 const Cadastro: React.FC<CadastroProps> = (props) => {
-  // Estado para ordenação
-  const [sortedColumn, setSortedColumn] = useState<string | undefined>(
-    undefined
-  );
-  const [isSortedDescending, setIsSortedDescending] = useState<boolean>(false);
+  
+  const [isSortedDescending] = useState<boolean>(false);
 
   // Estado inicial itens
   const initialState: ItemCadastro[] = [];
@@ -53,7 +50,6 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [isEditPanelOpen, setEditPanelOpen] = useState(false);
   const [editedItem, setEditedItem] = useState<ItemCadastro | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccessful, setSaveSuccessful] = useState(false);
 
   // Estados para propriedades de itens editados
   const [editedTitulo, setEditedTitulo] = useState<string>(
@@ -114,7 +110,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   }, [editedItem, items]);
 
   //colunas
-  const [columns, setColumns] = useState<IColumn[]>([
+  const [columns] = useState<IColumn[]>([
     {
       key: "ID",
       name: "ID", //nome coluna da tabela
