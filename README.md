@@ -33,7 +33,7 @@ export interface Imagem {
 * **Página Carrossel:** 
     * Navegação por "bullets" para acesso rápido a cada imagem. 
     * Navegação por setas para uma experiência fluida. ⬅️➡️
-    * Abertura de imagens em nova aba para uma visualização mais detalhada. ️
+    
 
 * **Página Cadastro:** ️
     * Listagem de todas as imagens cadastradas, ordenadas pela sua ordem.
@@ -71,17 +71,22 @@ Acompanhe o progresso e as próximas etapas:
 
 - [x] Pesquisa sobre Fluent UI  ✅
 - [ ] Verificar responsividade 
-- [ ] Compor ReadMe para o repositório 
+- [x] Compor ReadMe para o repositório 
 - [ ] Bolar testes [ver em Pesquisa](https://www.notion.so/Pesquisa-50f0f5b1897348408d4bf8d602a51161?pvs=21) 
 
 ## Bugs identificados:
 
 * **Slider:**
-    - [ ] Arrows e Dots não estão aparecendo 
-    - [ ] Criar box para reduzir DIV 
+    - [x] Arrows e Dots não estão aparecendo 
+    - [x] Criar box para reduzir DIV 
 * **Cadastro:**
     - [ ] Esclarecer sobre "URL direcionamento" 
-    - [ ] MODAL de confirmação de edição ⚠️
+    - [x] MODAL de confirmação de edição ⚠️
+    - [ ]  Logica de Ordenação pela coluna “ORDEM” ainda não está 100%
+     - [ ]  Função para forçar renderização não funciona -não está atualizando/renderizando lista qua, itens têm sua ordem alterada, porém não renderiza a lista (para EDIT e NEW ITEM)
+     - [x]  Adicionar um item em uma posição não está reescrevendo a Ordem dos demais itens
+     - [x]  Excluir item não está reescrevendo a Ordem dos demais itens
+     - [ ]  Atualizar ordem de item de 1º para última posição não atualiza demais itens
 
 ## Melhorias no projeto (sugestões)
 
