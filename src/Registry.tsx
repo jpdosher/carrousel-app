@@ -123,13 +123,13 @@ const Cadastro: React.FC<CadastroProps> = (_props) => {
       maxWidth: 40,
     },
     // uncomment para debugar
-    {
-      key: "Ordem",
-      name: "Ordem", //nome coluna
-      fieldName: "Ordem", //Ref dados
-      minWidth: 20,
-      maxWidth: 40,
-    },
+    // {
+    //   key: "Ordem",
+    //   name: "Ordem", //nome coluna
+    //   fieldName: "Ordem", //Ref dados
+    //   minWidth: 20,
+    //   maxWidth: 40,
+    // },
     {
       key: "Titulo",
       name: "Título",
