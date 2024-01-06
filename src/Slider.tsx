@@ -79,13 +79,13 @@ const Slider: React.FC = () => {
       </div>
       <div className="external-buttons-container">
         <img
-          src="src/assets/previous.png"
+          src="public/previous.png"
           alt="Previous"
           className="prev-button"
           onClick={prevSlide}
         />
         <img
-          src="src/assets/next.png"
+          src="public/next.png"
           alt="Next"
           className="next-button"
           onClick={nextSlide}

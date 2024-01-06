@@ -11,7 +11,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <header className="cabecalho">
         <div>
-          <img className="cabecalho__logo" src="src/assets/log.png" alt="Logo" />
+          <img className="cabecalho__logo" src="public/log.png" alt="Logo" />
         </div>
         <nav id="selectedNav">
           <NavLink className="cabecalho__menu__link" to="/slider">
