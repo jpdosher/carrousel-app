@@ -32,12 +32,10 @@ interface ItemCadastro {
 interface CadastroProps {}
 
 //ANCHOR declaracao de States 
-const Cadastro: React.FC<CadastroProps> = (props) => {
+const Cadastro: React.FC<CadastroProps> = (_props) => {
   // Estado para ordenação
-  const [sortedColumn, setSortedColumn] = useState<string | undefined>(
-    undefined
-  );
-  const [isSortedDescending, setIsSortedDescending] = useState<boolean>(false);
+
+  const [isSortedDescending] = useState<boolean>(false);
 
   // Estado inicial itens
   const initialState: ItemCadastro[] = [];
@@ -54,7 +52,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
   const [isEditPanelOpen, setEditPanelOpen] = useState(false);
   const [editedItem, setEditedItem] = useState<ItemCadastro | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccessful, setSaveSuccessful] = useState(false);
+  
 
   // Estados para propriedades de itens editados
   const [editedTitulo, setEditedTitulo] = useState<string>(
@@ -111,12 +109,12 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
         (max, item) => Math.max(max, item.Ordem),
         0
       );
-      setEditedOrdem(highestOrdem + 1); //FIXME - Ordem update
+      setEditedOrdem(highestOrdem + 1);
     }
   }, [editedItem, items]);
 
   //ANCHOR colunas para List
-  const [columns, setColumns] = useState<IColumn[]>([
+  const [columns] = useState<IColumn[]>([
     {
       key: "ID",
       name: "ID", //nome coluna da tabela
@@ -365,8 +363,8 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
             const updatedItems = items.map((item) =>
               item.ID === editedItem.ID ? { ...item, ...updatedData } : item
             );
-            setEditedItem(null);
             setItems(updatedItems);
+            setEditedItem(null);            
             setIsEditItemSuccessModalVisible(true); // Show success modal for editing item
           } else {
             console.error("Failed to update item");
@@ -603,7 +601,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               required
               disabled={false}
               errorMessage={tituloError}
-              onChange={(event, newValue) => {
+              onChange={(_event, newValue) => {
                 setEditedTitulo(newValue || "");
                 setTituloError(undefined);
               }}
@@ -615,7 +613,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               required
               disabled={false}
               errorMessage={descricaoError}
-              onChange={(event, newValue) => {
+              onChange={(_event, newValue) => {
                 setEditedDescricao(newValue || "");
                 setDescricaoError(undefined);
               }}
@@ -627,7 +625,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               required
               disabled={false}
               errorMessage={imagemError}
-              onChange={(event, newValue) => {
+              onChange={(_event, newValue) => {
                 setEditedImagem(newValue || "");
                 setImagemError(undefined);
               }}
@@ -639,7 +637,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               required
               disabled={false}
               errorMessage={linkError}
-              onChange={(event, newValue) => {
+              onChange={(_event, newValue) => {
                 setEditedLink(newValue || "");
                 setLinkError(undefined);
               }}
@@ -649,7 +647,7 @@ const Cadastro: React.FC<CadastroProps> = (props) => {
               label="Ordem"
               type="number"
               value={editedOrdem.toString()}
-              onChange={(event, newValue) => {
+              onChange={(_event, newValue) => {
                 const newOrdem = newValue
                   ? Math.min(
                       Math.max(1, parseInt(newValue)),
