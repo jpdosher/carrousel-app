@@ -2,6 +2,10 @@
 
 > Este aplicativo é uma implementação de um carrossel de imagens dinâmico alimentado por uma lista de cadastros de imagens✨
 
+<br>
+
+> https://carrousel-app.vercel.app/ <- Página do App
+
 **Funcionalidades:**
 
 * **Página Carrossel:** Exibe um carrossel de imagens, ordenadas de acordo com sua importância. 
@@ -81,8 +85,7 @@ Acompanhe o progresso e as próximas etapas:
     - [x] Criar box para reduzir DIV 
 * **Cadastro:**
     - [ ] Esclarecer sobre "URL direcionamento" 
-    - [x] MODAL de confirmação de edição ⚠️
-    - [ ]  Logica de Ordenação pela coluna “ORDEM” ainda não está 100%
+    - [x] MODAL de confirmação de edição
      - [ ]  Função para forçar renderização não funciona -não está atualizando/renderizando lista qua, itens têm sua ordem alterada, porém não renderiza a lista (para EDIT e NEW ITEM)
      - [x]  Adicionar um item em uma posição não está reescrevendo a Ordem dos demais itens
      - [x]  Excluir item não está reescrevendo a Ordem dos demais itens
@@ -103,6 +106,6 @@ Acompanhe o progresso e as próximas etapas:
 
 ### Palavras-chave:
 
-#REACT
-#FLUENT UI
-#TYPESCRIPT
+#REACT |
+#FLUENT UI |
+#TYPESCRIPT | 

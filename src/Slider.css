@@ -14,7 +14,7 @@
     height: 100%; /* total do contêiner */
 }
 
-/* Item do Slider */
+
 .custom-slider-item {
     flex: 0 0 100%;
     transition: transform 0.5s ease;
@@ -46,7 +46,7 @@
     justify-content: center;
     color: var(--cor-secundaria);
   }
-  
+
 .text-container h3 {
     color: #333333;
     margin: 0;
