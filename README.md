@@ -2,7 +2,7 @@
 
 > Este aplicativo é uma implementação de um carrossel de imagens dinâmico alimentado por uma lista de cadastros de imagens✨
 
-<br>
+<br>🐞
 
 > https://carrousel-app.vercel.app/ <- Página do App
 
